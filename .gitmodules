@@ -8,6 +8,7 @@
 [submodule "gemoc-studio-execution-ale"]
 	path = gemoc-studio-execution-ale
 	url = https://github.com/eclipse/gemoc-studio-execution-ale.git
+	branch = master
 [submodule "gemoc-studio-execution-moccml"]
 	path = gemoc-studio-execution-moccml
 	url = https://github.com/eclipse/gemoc-studio-execution-moccml.git
