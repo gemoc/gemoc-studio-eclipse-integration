@@ -17,8 +17,16 @@ pipeline {
 	stages {
 		stage('Prepare') {
 			steps {
-			    echo 'Content of the workspace'
-				sh "ls"
+			
+			    echo 'Content of the workspace before Checkout'
+				sh "ls -lsa"
+				//	checkout resolveScm(source: git('https://github.com/eclipse/gemoc-studio.git'), targets: [BRANCH_NAME,'master'])
+	    		script {
+     				def gemocstudioScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/gemoc/gemoc-studio-eclipse-integration.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
+     				checkout gemocstudioScm
+     			}
+				echo 'Content of the workspace after Checkout'
+				sh "ls -lsa"
 			}
 		}
 		stage('Build and verify') {
