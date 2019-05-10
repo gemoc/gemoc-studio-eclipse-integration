@@ -1,6 +1,7 @@
 [submodule "gemoc-studio"]
 	path = gemoc-studio
 	url = https://github.com/eclipse/gemoc-studio.git
+	branch = master
 [submodule "gemoc-studio-modeldebugging"]
 	path = gemoc-studio-modeldebugging
 	url = https://github.com/eclipse/gemoc-studio-modeldebugging.git
