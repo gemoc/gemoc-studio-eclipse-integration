@@ -1,0 +1,15 @@
+[submodule "gemoc-studio"]
+	path = gemoc-studio
+	url = https://github.com/eclipse/gemoc-studio.git
+[submodule "gemoc-studio-modeldebugging"]
+	path = gemoc-studio-modeldebugging
+	url = https://github.com/eclipse/gemoc-studio-modeldebugging.git
+[submodule "gemoc-studio-execution-ale"]
+	path = gemoc-studio-execution-ale
+	url = https://github.com/eclipse/gemoc-studio-execution-ale.git
+[submodule "gemoc-studio-execution-moccml"]
+	path = gemoc-studio-execution-moccml
+	url = https://github.com/eclipse/gemoc-studio-execution-moccml.git
+[submodule "gemoc-studio-moccml"]
+	path = gemoc-studio-moccml
+	url = https://github.com/eclipse/gemoc-studio-moccml.git
