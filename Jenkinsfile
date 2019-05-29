@@ -6,6 +6,7 @@ pipeline {
 		skipDefaultCheckout(true) // avoid default checkout implied by declarative pipeline (we do it in the prepare stage)
 		buildDiscarder( logRotator(numToKeepStr:'60', artifactNumToKeepStr: '1'))
 		disableConcurrentBuilds()
+		lock('myResource')  // ensure unique execution
 	}
 	tools {
         	maven 'apache-maven-latest'
@@ -17,77 +18,73 @@ pipeline {
 	stages {
 		
 		stage('Prepare') {
-			steps {
-				lock('myResource') {	
-					echo 'Content of the workspace before Checkout'
-					sh "ls -lsa"
-					// Wipe the workspace so we are building completely clean
-	  		  		deleteDir()
-					//cleanWs()
-					
-					// Get code from GitHub repositories				
-					// this will check if there is a branch with the same name as the current branch (ie. the branch containing this Jenkinsfile) and use that for the checkout, but if there is no
-					// branch with the same name it will fall back to the master branch
-					dir('gemoc-studio') {
-	    					//	checkout resolveScm(source: git('https://github.com/eclipse/gemoc-studio.git'), targets: [BRANCH_NAME,'master'])
-				    		script {
-			 				def gemocstudioScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
-			 				checkout gemocstudioScm
-			 			}
-				    	}
-					dir('gemoc-studio-modeldebugging') {
-	    					script {
-			 				def gemocstudiomodeldebuggingScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio-modeldebugging.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
-			 				checkout gemocstudiomodeldebuggingScm
-			 			}
+			steps {	
+				echo 'Content of the workspace before Checkout'
+				sh "ls -lsa"
+				// Wipe the workspace so we are building completely clean
+				deleteDir()
+				//cleanWs()
+
+				// Get code from GitHub repositories				
+				// this will check if there is a branch with the same name as the current branch (ie. the branch containing this Jenkinsfile) and use that for the checkout, but if there is no
+				// branch with the same name it will fall back to the master branch
+				dir('gemoc-studio') {
+					//	checkout resolveScm(source: git('https://github.com/eclipse/gemoc-studio.git'), targets: [BRANCH_NAME,'master'])
+					script {
+						def gemocstudioScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
+						checkout gemocstudioScm
 					}
-					dir('gemoc-studio-execution-ale') {
-	    					script {
-			 				def gemocstudiomodeldebuggingScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio-execution-ale.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
-			 				checkout gemocstudiomodeldebuggingScm
-			 			}
+				}
+				dir('gemoc-studio-modeldebugging') {
+					script {
+						def gemocstudiomodeldebuggingScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio-modeldebugging.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
+						checkout gemocstudiomodeldebuggingScm
 					}
-					dir('gemoc-studio-moccml') {
-	    					script {
-			 				def gemocstudiomoccmlScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio-moccml.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
-			 				checkout gemocstudiomoccmlScm
-			 			}
+				}
+				dir('gemoc-studio-execution-ale') {
+					script {
+						def gemocstudiomodeldebuggingScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio-execution-ale.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
+						checkout gemocstudiomodeldebuggingScm
 					}
-					dir('gemoc-studio-execution-moccml') {
-	    					script {
-			 				def gemocstudioexecutionmoccmlScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio-execution-moccml.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
-			 				checkout gemocstudioexecutionmoccmlScm
-			 			}
+				}
+				dir('gemoc-studio-moccml') {
+					script {
+						def gemocstudiomoccmlScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio-moccml.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
+						checkout gemocstudiomoccmlScm
 					}
-				    	echo 'Content of the workspace after Checkout'
-					sh "ls -lsa"
-					sh "chmod 777 ./gemoc-studio/dev_support/jenkins/showGitBranches.sh"
-		      			sh "./gemoc-studio/dev_support/jenkins/showGitBranches.sh ."
-				} // end of lock	
+				}
+				dir('gemoc-studio-execution-moccml') {
+					script {
+						def gemocstudioexecutionmoccmlScm = resolveScm source: [$class: 'GitSCMSource', credentialsId: '', id: '_', remote: 'https://github.com/eclipse/gemoc-studio-execution-moccml.git', traits: [[$class: 'BranchDiscoveryTrait'], [$class: 'LocalBranchTrait']]], targets: [BRANCH_NAME, 'master']
+						checkout gemocstudioexecutionmoccmlScm
+					}
+				}
+				echo 'Content of the workspace after Checkout'
+				sh "ls -lsa"
+				sh "chmod 777 ./gemoc-studio/dev_support/jenkins/showGitBranches.sh"
+				sh "./gemoc-studio/dev_support/jenkins/showGitBranches.sh ."
 			}
 		}
 		stage('Build and verify') {
 	    		steps { 
-				lock('myResource') { 
-					script {
-				
-						def studioVariant
-						if(  env.JENKINS_URL.contains("https://hudson.eclipse.org/gemoc/")){
-						studioVariant = "Official build"
-						} else {
-						studioVariant = "${JENKINS_URL}"
-						}
-						// Run the maven build with tests  
-						withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}"]){ 
-						sh 'printenv'         
-						   	dir ('gemoc-studio/dev_support/full_compilation') {
-								wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-									sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} clean verify --errors "
-								}
-							}      
-						}
-				   	}
-				} // end of lock
+				script {
+
+					def studioVariant
+					if(  env.JENKINS_URL.contains("https://hudson.eclipse.org/gemoc/")){
+					studioVariant = "Official build"
+					} else {
+					studioVariant = "${JENKINS_URL}"
+					}
+					// Run the maven build with tests  
+					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}"]){ 
+					sh 'printenv'         
+						dir ('gemoc-studio/dev_support/full_compilation') {
+							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
+								sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} clean verify --errors "
+							}
+						}      
+					}
+				}
 			}
 			post {
 				success {
