@@ -80,7 +80,7 @@ pipeline {
 					sh 'printenv'         
 						dir ('gemoc-studio/dev_support/full_compilation') {
 							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-								sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} clean verify --errors "
+								sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} clean verify --errors --show-version"
 							}
 						}      
 					}
