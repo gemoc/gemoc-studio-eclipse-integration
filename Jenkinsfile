@@ -76,7 +76,7 @@ pipeline {
 			//	container('gemoc-custom-container') {
 					script {	
 						def studioVariant
-						if(  env.JENKINS_URL.contains("https://hudson.eclipse.org/gemoc/")){
+						if(  env.JENKINS_URL.contains("https://ci.eclipse.org/gemoc/")){
 							studioVariant = "Official build"
 						} else {
 							studioVariant = "${JENKINS_URL}"
@@ -146,36 +146,38 @@ pipeline {
         		branch "master"
 			}
 			steps {
-				echo "Deploy products to download.eclipse.org"
-				sh '''
-					ssh ${STORAGE_SERVER} rm -rf ${DOWNLOAD_FOLDER}/packages/nightly
-					ssh ${STORAGE_SERVER} mkdir -p ${DOWNLOAD_FOLDER}/packages/nightly
-				'''
-				sh '''
-					scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/packages/nightly
-					scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/index.html ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/packages/nightly
-				'''
-				echo "Deploy updatesite to download.eclipse.org"
-				sh '''
-					ssh ${STORAGE_SERVER} rm -rf   ${DOWNLOAD_FOLDER}/updates/nightly
-					ssh ${STORAGE_SERVER} mkdir -p ${DOWNLOAD_FOLDER}/updates/nightly
-				'''
-				sh '''
-					scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/* ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/updates/nightly
-				'''
-				//sh 'zip -R   ${DOWNLOAD_FOLDER}/updates/nightly/repository.zip gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/*'
-				
-				
-				echo "Deploy documentation archive to download.eclipse.org"
-				sh '''
-					ssh ${STORAGE_SERVER} rm -rf   ${DOWNLOAD_FOLDER}/docs/nightly
-					ssh ${STORAGE_SERVER} mkdir -p ${DOWNLOAD_FOLDER}/docs/nightly
-				'''
-				sh '''
-					scp -r gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/webhelp/* ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/docs/nightly
-				'''
-				//sh 'mkdir -p ${DOWNLOAD_FOLDER}/docs/nightly/archive'
-				//sh 'zip -R   ${DOWNLOAD_FOLDER}/docs/nightly/archive/studio-docs.zip gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/webhelp/*'
+				sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+					echo "Deploy products to download.eclipse.org"
+					sh '''
+						ssh ${STORAGE_SERVER} rm -rf ${DOWNLOAD_FOLDER}/packages/nightly
+						ssh ${STORAGE_SERVER} mkdir -p ${DOWNLOAD_FOLDER}/packages/nightly
+					'''
+					sh '''
+						scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/packages/nightly
+						scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/index.html ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/packages/nightly
+					'''
+					echo "Deploy updatesite to download.eclipse.org"
+					sh '''
+						ssh ${STORAGE_SERVER} rm -rf   ${DOWNLOAD_FOLDER}/updates/nightly
+						ssh ${STORAGE_SERVER} mkdir -p ${DOWNLOAD_FOLDER}/updates/nightly
+					'''
+					sh '''
+						scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/* ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/updates/nightly
+					'''
+					//sh 'zip -R   ${DOWNLOAD_FOLDER}/updates/nightly/repository.zip gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/*'
+					
+					
+					echo "Deploy documentation archive to download.eclipse.org"
+					sh '''
+						ssh ${STORAGE_SERVER} rm -rf   ${DOWNLOAD_FOLDER}/docs/nightly
+						ssh ${STORAGE_SERVER} mkdir -p ${DOWNLOAD_FOLDER}/docs/nightly
+					'''
+					sh '''
+						scp -r gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/webhelp/* ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/docs/nightly
+					'''
+					//sh 'mkdir -p ${DOWNLOAD_FOLDER}/docs/nightly/archive'
+					//sh 'zip -R   ${DOWNLOAD_FOLDER}/docs/nightly/archive/studio-docs.zip gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/webhelp/*'
+				}
 			}
 		}
 	}
