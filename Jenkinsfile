@@ -150,6 +150,8 @@ pipeline {
 				sh '''
 					ssh ${STORAGE_SERVER} rm -rf ${DOWNLOAD_FOLDER}/packages/nightly
 					ssh ${STORAGE_SERVER} mkdir -p ${DOWNLOAD_FOLDER}/packages/nightly
+				'''
+				sh '''
 					scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/packages/nightly
 					scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/index.html ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/packages/nightly
 				'''
@@ -157,6 +159,8 @@ pipeline {
 				sh '''
 					ssh ${STORAGE_SERVER} rm -rf   ${DOWNLOAD_FOLDER}/updates/nightly
 					ssh ${STORAGE_SERVER} mkdir -p ${DOWNLOAD_FOLDER}/updates/nightly
+				'''
+				sh '''
 					scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/* ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/updates/nightly
 				'''
 				//sh 'zip -R   ${DOWNLOAD_FOLDER}/updates/nightly/repository.zip gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/*'
@@ -166,6 +170,8 @@ pipeline {
 				sh '''
 					ssh ${STORAGE_SERVER} rm -rf   ${DOWNLOAD_FOLDER}/docs/nightly
 					ssh ${STORAGE_SERVER} mkdir -p ${DOWNLOAD_FOLDER}/docs/nightly
+				'''
+				sh '''
 					scp -r gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/webhelp/* ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/docs/nightly
 				'''
 				//sh 'mkdir -p ${DOWNLOAD_FOLDER}/docs/nightly/archive'
