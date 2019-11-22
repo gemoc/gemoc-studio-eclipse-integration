@@ -2,11 +2,96 @@
 // you can fall down to script syntax using the script { } command 
 pipeline {
 	agent   {
-      
-      kubernetes {
-        label 'migration'
-      }
-    }
+		kubernetes {
+		label 'gemoc-buildpod'
+		defaultContainer 'jnlp' 
+		// no cat command as the same in migration ... replace jnlp image ...
+		yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - image: gemoc/gemoc-jenkins-fat-agent:latest
+    name: 'jnlp'
+    resources:
+      limits:
+        memory: '4Gi'
+        cpu: '2000m'
+      requests:
+        memory: '4Gi'
+        cpu: '1000m'
+    securityContext:
+      privileged: false
+    tty: true
+    volumeMounts:
+    - mountPath: '/home/jenkins/.m2/toolchains.xml'
+      name: 'toolchains-xml'
+      readOnly: true
+      subPath: 'toolchains.xml'
+    - mountPath: '/opt/tools'
+      name: 'volume-0'
+      readOnly: false
+    - mountPath: '/home/jenkins'
+      name: 'volume-2'
+      readOnly: false
+    - mountPath: '/home/jenkins/.m2/repository'
+      name: 'volume-3'
+      readOnly: false
+    - mountPath: '/home/jenkins/.m2/settings-security.xml'
+      name: 'settings-security-xml'
+      readOnly: true
+      subPath: 'settings-security.xml'
+    - mountPath: '/home/jenkins/.m2/settings.xml'
+      name: 'settings-xml'
+      readOnly: true
+      subPath: 'settings.xml'
+    - mountPath: '/home/jenkins/.ssh'
+      name: 'volume-1'
+      readOnly: false
+    - mountPath: '/home/jenkins/agent'
+      name: 'workspace-volume'
+      readOnly: false
+    workingDir: '/home/jenkins/agent'
+  nodeSelector: {}
+  restartPolicy: 'Never'
+  volumes:
+  - name: 'settings-security-xml'
+    secret:
+      items:
+      - key: 'settings-security.xml'
+        path: 'settings-security.xml'
+      secretName: 'm2-secret-dir'
+  - name: 'volume-0'
+    persistentVolumeClaim:
+      claimName: 'tools-claim-jiro-gemoc'
+      readOnly: true
+  - configMap:
+      items:
+      - key: 'toolchains.xml'
+        path: 'toolchains.xml'
+      name: 'm2-dir'
+    name: 'toolchains-xml'
+  - emptyDir:
+      medium: ''
+    name: 'volume-2'
+  - configMap:
+      name: 'known-hosts'
+    name: 'volume-1'
+  - name: 'settings-xml'
+    secret:
+      items:
+      - key: 'settings.xml'
+        path: 'settings.xml'
+      secretName: 'm2-secret-dir'
+  - emptyDir:
+      medium: ''
+    name: 'workspace-volume'
+  - emptyDir:
+      medium: ''
+    name: 'volume-3'
+'''
+		}
+	}
 	options {
 		//skipDefaultCheckout(true) // avoid default checkout implied by declarative pipeline (we do it in the prepare stage)
 		buildDiscarder( logRotator(numToKeepStr:'60', artifactNumToKeepStr: '1'))
