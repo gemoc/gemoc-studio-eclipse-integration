@@ -96,6 +96,7 @@ spec:
 		//skipDefaultCheckout(true) // avoid default checkout implied by declarative pipeline (we do it in the prepare stage)
 		buildDiscarder( logRotator(numToKeepStr:'60', artifactNumToKeepStr: '1'))
 		disableConcurrentBuilds()
+		timeout(time: 5, unit: 'HOURS')   // timeout on whole pipeline job
 	}
 	tools {
         	maven 'apache-maven-latest'
@@ -158,28 +159,26 @@ spec:
 		}
 		stage('Build and unit test') {
 			steps { 
-			//	container('gemoc-custom-container') {
-					script {	
-						def studioVariant
-						if(  env.JENKINS_URL.contains("https://ci.eclipse.org/gemoc/")){
-							studioVariant = "Official build"
-						} else {
-							studioVariant = "${JENKINS_URL}"
-						}
-						// Run the maven build and unit tests only  
-						// maven requires some ram to build the update site and product
-						withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-							"MAVEN_OPTS=-Xmx2000m -XshowSettings:vm"]){
-							dir ('gemoc-studio/dev_support/full_compilation') {
-								sh 'printenv'         
-								sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
-										-Djava.awt.headless=true \
-										--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
-										clean install --errors --show-version"
-							}      
-						}
+				script {	
+					def studioVariant
+					if(  env.JENKINS_URL.contains("https://ci.eclipse.org/gemoc/")){
+						studioVariant = "Official build"
+					} else {
+						studioVariant = "${JENKINS_URL}"
 					}
-			//	}
+					// Run the maven build and unit tests only  
+					// maven requires some ram to build the update site and product
+					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
+						"MAVEN_OPTS=-Xmx2000m -XshowSettings:vm"]){
+						dir ('gemoc-studio/dev_support/full_compilation') {
+							sh 'printenv'         
+							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
+									-Djava.awt.headless=true \
+									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
+									clean install --errors --show-version"
+						}      
+					}
+				}
 			}
 			post {
 				always {
@@ -189,29 +188,43 @@ spec:
 	 	}
 		stage('System test') {
 			steps { 
-		//		container('gemoc-custom-container') {
-					script {	
-						def studioVariant
-						if(  env.JENKINS_URL.contains("https://hudson.eclipse.org/gemoc/")){
-							studioVariant = "Official build"
-						} else {
-							studioVariant = "${JENKINS_URL}"
-						}
-						// Run the maven system tests only  
-						// use less RAM to maven in order to give more to the UI test JVM
-						withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-							"MAVEN_OPTS=-XshowSettings:vm"]){
-							dir ('gemoc-studio/dev_support/full_compilation') {
-								sh 'printenv'         
-								wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-									sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
-										--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
-										verify --errors --show-version"
-								}
-							}      
-						}
+				script {	
+					def studioVariant
+					if(  env.JENKINS_URL.contains("https://hudson.eclipse.org/gemoc/")){
+						studioVariant = "Official build"
+					} else {
+						studioVariant = "${JENKINS_URL}"
 					}
-			//	}
+					// Run the maven system tests only  
+					// use less RAM to maven in order to give more to the UI test JVM
+					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
+						"MAVEN_OPTS=-XshowSettings:vm"]){
+						dir ('gemoc-studio/dev_support/full_compilation') {
+							sh 'printenv'  
+							sh 'echo "before Xvnc display $DISPLAY"'         
+							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
+							
+							sh 'printenv' 
+							sh 'echo "after XVnc display $DISPLAY"' 
+							sh 'xrandr' 
+							sh 'touch /tmp/stop-ffmpeg'
+							sh 'mkdir -p target'  
+							/*
+							-crf : quality the lower the better
+							-r : frame per seconds
+							*/   
+							sh "ffmpeg -f x11grab -video_size 1024x768 -i $DISPLAY -vcodec libx264 -tune stillimage -crf 23 -r 12 -pix_fmt yuv420p target/system_test.mp4 </tmp/stop-ffmpeg  >target/VideoCapture.log 2>>target/VideoCapture_err.log &"
+							// use linux timeout in order to continue the video capture
+							sh "timeout -s KILL 40m \
+								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
+									--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
+									verify --errors --show-version"
+							sh "echo 'q' > /tmp/stop-ffmpeg"
+						
+							}
+						}      
+					}
+				}
 			}
 			post {
 				always {
@@ -222,7 +235,7 @@ spec:
 		stage("Archive in Jenkins") {
 			steps {
 				echo "archive artifact"
-				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, **/GemocTestRecord.mp4, **/screenshots/**'
+				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**'
 			}
 		}
 		stage('Web upload') {
