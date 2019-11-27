@@ -199,16 +199,13 @@ spec:
 					// use less RAM to maven in order to give more to the UI test JVM
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
 						"MAVEN_OPTS=-XshowSettings:vm"]){
-						dir ('gemoc-studio/dev_support/full_compilation') {
-							sh 'printenv'  
-							sh 'echo "before Xvnc display $DISPLAY"'         
+						dir ('gemoc-studio/dev_support/full_compilation') {         
 							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-							
-							sh 'printenv' 
-							sh 'echo "after XVnc display $DISPLAY"' 
-							sh 'xrandr' 
+							sh 'printenv'
 							sh 'touch /tmp/stop-ffmpeg'
 							sh 'mkdir -p target'  
+							// initiate the recording log with a timestamp
+							sh 'date --iso-8601=s  > target/system_test_timeline.log'
 							/*
 							-crf : quality the lower the better
 							-r : frame per seconds
@@ -235,7 +232,7 @@ spec:
 		stage("Archive in Jenkins") {
 			steps {
 				echo "archive artifact"
-				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**'
+				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/target/surefire-reports/*'
 			}
 		}
 		stage('Web upload') {
