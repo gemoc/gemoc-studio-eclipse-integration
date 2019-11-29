@@ -205,7 +205,7 @@ spec:
 							sh 'touch /tmp/stop-ffmpeg'
 							sh 'mkdir -p target'  
 							// initiate the recording log with a timestamp
-							sh 'date --iso-8601=s  > target/system_test_timeline.log'
+							sh 'date --rfc-3339=s  > target/system_test_timeline.log'
 							/*
 							-crf : quality the lower the better
 							-r : frame per seconds
@@ -232,7 +232,7 @@ spec:
 		stage("Archive in Jenkins") {
 			steps {
 				echo "archive artifact"
-				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/target/surefire-reports/*'
+				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**'
 			}
 		}
 		stage('Web upload') {
