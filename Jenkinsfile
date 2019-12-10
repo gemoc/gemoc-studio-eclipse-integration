@@ -227,6 +227,14 @@ spec:
 				always {
 					junit '**/target/surefire-reports/TEST-*.xml' 
 				}
+				// archive artifact even if it failed (timeout) or was aborted (in order to debug using the video)
+				// because the following steps will be skipped
+				aborted {
+				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**'
+				}
+				failure {
+				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**'				    
+				}
 			}
 	 	}
 		stage("Archive in Jenkins") {
