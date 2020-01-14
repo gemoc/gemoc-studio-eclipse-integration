@@ -216,7 +216,9 @@ spec:
 								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
 									verify --errors --show-version"
+							sh "echo stopping ffmpeg"
 							sh "echo 'q' > /tmp/stop-ffmpeg"
+							sh "sleep 5"
 						
 							}
 						}      
