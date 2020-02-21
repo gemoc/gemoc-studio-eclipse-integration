@@ -169,7 +169,7 @@ spec:
 					// Run the maven build and unit tests only  
 					// maven requires some ram to build the update site and product
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=-Xmx2000m -XshowSettings:vm"]){
+						"MAVEN_OPTS=-Xmx2000m -XshowSettings:vm -Duser.home=/home/jenkins"]){
 						dir ('gemoc-studio/dev_support/full_compilation') {
 							sh 'printenv'         
 							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
@@ -286,8 +286,12 @@ spec:
 					//sh 'zip -R   ${DOWNLOAD_FOLDER}/docs/nightly/archive/studio-docs.zip gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/webhelp/*'
 				}
 			}
-		}
+		} 
 		stage('deploy to nexus') {
+			when {
+        		// skip this stage unless on Master branch
+        		branch "master"
+			}
 			steps { 
 				script {	
 					def studioVariant
@@ -304,15 +308,11 @@ spec:
 							sh 'printenv'         
 							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									-Djava.awt.headless=true \
-									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
+									-DskipTests \
+									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb,!../../gemoc_studio/releng/org.eclipse.gemoc_studio.updatesite,!../../gemoc_studio/docs/org.eclipse.gemoc.studio.doc\
 									clean deploy --errors --show-version"
 						}      
 					}
-				}
-			}
-			post {
-				always {
-					junit '**/target/surefire-reports/TEST-*.xml' 
 				}
 			}
 	 	}
