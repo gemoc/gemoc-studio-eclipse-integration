@@ -213,7 +213,7 @@ spec:
 							sh "ffmpeg -f x11grab -video_size 1024x768 -i $DISPLAY -vcodec libx264 -tune stillimage -crf 23 -r 12 -pix_fmt yuv420p target/system_test.mp4 </tmp/stop-ffmpeg  >target/VideoCapture.log 2>>target/VideoCapture_err.log &"
 							// use linux timeout in order to continue the video capture
 							// capture the returnStatus in order to make sure to stop ffmepg even if an error occured
-							def status = sh(returnStatus: true, script: "timeout -s KILL 40m \
+							def status = sh(returnStatus: true, script: "timeout -s KILL 60m \
 								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
 									verify --errors --show-version ")					
