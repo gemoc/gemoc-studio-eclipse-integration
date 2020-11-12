@@ -99,8 +99,9 @@ spec:
 		timeout(time: 5, unit: 'HOURS')   // timeout on whole pipeline job
 	}
 	tools {
+	        // cf. https://wiki.eclipse.org/Jenkins#Tools_.28and_locations_on_the_default_JNLP_agent_container.29
         	maven 'apache-maven-latest'
-        	jdk 'oracle-jdk8-latest'
+        	jdk 'openjdk-jdk11-latest'
 	}
 	environment {
 		DOWNLOAD_FOLDER = "/home/data/httpd/download.eclipse.org/gemoc"
