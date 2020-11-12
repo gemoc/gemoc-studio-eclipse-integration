@@ -113,6 +113,7 @@ spec:
 			steps {	
 				echo 'Content of the workspace before Checkout'
 				sh "ls -lsa"
+				sh "ls -lsa $JAVAFX_HOME"
 				
 				// Wipe the workspace so we are building completely clean
 	/*			deleteDir()
@@ -152,10 +153,11 @@ spec:
 						checkout gemocstudioexecutionmoccmlScm
 					}
 				}
-		*/		echo 'Content of the workspace after Checkout'
-				sh "ls -lsa"
+		*/	//	echo 'Content of the workspace after Checkout'
+			//	sh "ls -lsa"
 				sh "chmod 777 ./gemoc-studio/dev_support/jenkins/showGitBranches.sh"
 				sh "./gemoc-studio/dev_support/jenkins/showGitBranches.sh ."
+				sh "cat .gitmodules"
 			}
 		}
 		stage('Build and unit test') {
