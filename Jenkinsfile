@@ -113,6 +113,8 @@ spec:
 			steps {	
 				echo 'Content of the workspace before Checkout'
 				sh "ls -lsa"
+				sh "echo $HOME"
+				sh "ls -lsa $HOME"
 				sh "ls -lsa $JAVAFX_HOME"
 				
 				// Wipe the workspace so we are building completely clean
