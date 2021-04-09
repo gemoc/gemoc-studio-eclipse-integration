@@ -315,7 +315,7 @@ spec:
 									-Djava.awt.headless=true \
 									-DskipTests \
 									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
-									clean deploy --errors --show-version"
+									deploy --errors --show-version"
 						}      
 					}
 				}
