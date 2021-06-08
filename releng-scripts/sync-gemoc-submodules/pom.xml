@@ -23,7 +23,7 @@
         <artifactId>sync-git-submodules-branches-plugin</artifactId>
         <version>1.0.2</version>
         <configuration>
-        	<parentGitURL>git@github.com:gemoc/gemoc-studio-eclipseforks-integration.git</parentGitURL>
+        	<parentGitURL>git@github.com:gemoc/gemoc-studio-eclipse-integration.git</parentGitURL>
         	<userOrToken>${gituser.name}</userOrToken>
         	<password>${gituser.password}</password>
         	<committerName>${gituser.name}</committerName>
