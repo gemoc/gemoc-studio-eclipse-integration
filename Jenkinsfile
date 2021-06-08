@@ -314,7 +314,7 @@ spec:
 							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									-Djava.awt.headless=true \
 									-DskipTests \
-									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
+									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb,!../../gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite\
 									deploy --errors --show-version"
 						}      
 					}
