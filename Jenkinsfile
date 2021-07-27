@@ -174,7 +174,7 @@ spec:
 					// Run the maven build and unit tests only  
 					// maven requires some ram to build the update site and product
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=-Xmx2000m -XshowSettings:vm -Duser.home=/home/jenkins"]){
+						"MAVEN_OPTS=-Xmx2048m -XshowSettings:vm -Duser.home=/home/jenkins"]){
 						dir ('gemoc-studio/dev_support/full_compilation') {
 							sh 'printenv'         
 							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
@@ -201,9 +201,9 @@ spec:
 						studioVariant = "${JENKINS_URL}"
 					}
 					// Run the maven system tests only  
-					// use less RAM to maven in order to give more to the UI test JVM
+					// allocate less RAM to maven in order to give more to the UI test JVM
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=-XshowSettings:vm"]){
+						"MAVEN_OPTS=-Xmx1600m  -XshowSettings:vm"]){
 						dir ('gemoc-studio/dev_support/full_compilation') {         
 							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 							sh 'printenv'
@@ -218,10 +218,11 @@ spec:
 							sh "ffmpeg -f x11grab -video_size 1024x768 -i $DISPLAY -vcodec libx264 -tune stillimage -crf 23 -r 12 -pix_fmt yuv420p target/system_test.mp4 </tmp/stop-ffmpeg  >target/VideoCapture.log 2>>target/VideoCapture_err.log &"
 							// use linux timeout in order to continue the video capture
 							// capture the returnStatus in order to make sure to stop ffmepg even if an error occured
+							//def status = sh(returnStatus: true, script: "top -c -d 2 -w128 -b& \
 							def status = sh(returnStatus: true, script: "timeout -s KILL 60m \
 								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
-									verify --errors --show-version ")					
+									verify --errors --show-version ")				
 							sh "echo 'q' > /tmp/stop-ffmpeg"
 							if (status != 0) {
   								currentBuild.result = 'FAILED'
@@ -239,10 +240,10 @@ spec:
 				// archive artifact even if it failed (timeout) or was aborted (in order to debug using the video)
 				// because the following steps will be skipped
 				aborted {
-				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**'
+				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log'
 				}
 				failure {
-				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**'				    
+				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log'				    
 				}
 			}
 	 	}
