@@ -203,7 +203,7 @@ spec:
 					// Run the maven system tests only  
 					// allocate less RAM to maven in order to give more to the UI test JVM
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=-Xmx1600m  -XshowSettings:vm"]){
+						"MAVEN_OPTS=-Xmx1400m  -XshowSettings:vm"]){
 						dir ('gemoc-studio/dev_support/full_compilation') {         
 							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 							sh 'printenv'
