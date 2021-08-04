@@ -11,7 +11,7 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - image: gemoc/gemoc-jenkins-fat-agent:2020-11-11
+  - image: gemoc/gemoc-jenkins-fat-agent:2021-08-02
     name: 'jnlp'
     resources:
       limits:
@@ -30,9 +30,6 @@ spec:
       subPath: 'toolchains.xml'
     - mountPath: '/opt/tools'
       name: 'volume-0'
-      readOnly: false
-    - mountPath: '/home/jenkins'
-      name: 'volume-2'
       readOnly: false
     - mountPath: '/home/jenkins/.m2/repository'
       name: 'volume-3'
@@ -115,6 +112,7 @@ spec:
 				sh "ls -lsa"
 				sh "echo $HOME"
 				sh "ls -lsa $HOME"
+				sh "ls -lsa $HOME/agent"
 				sh "ls -lsa $JAVAFX_HOME"
 				
 				// Wipe the workspace so we are building completely clean
@@ -203,7 +201,7 @@ spec:
 					// Run the maven system tests only  
 					// allocate less RAM to maven in order to give more to the UI test JVM
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=-Xmx1400m  -XshowSettings:vm"]){
+						"MAVEN_OPTS=-Xmx1200m  -XshowSettings:vm"]){
 						dir ('gemoc-studio/dev_support/full_compilation') {         
 							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 							sh 'printenv'
@@ -219,7 +217,8 @@ spec:
 							// use linux timeout in order to continue the video capture
 							// capture the returnStatus in order to make sure to stop ffmepg even if an error occured
 							//def status = sh(returnStatus: true, script: "top -c -d 2 -w128 -b& \
-							def status = sh(returnStatus: true, script: "timeout -s KILL 60m \
+							def status = sh(returnStatus: true, script: "python3 ~/memory-monitor-per-process.py > process_mem.log &\
+							    timeout -s KILL 60m \
 								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
 									verify --errors --show-version ")				
@@ -240,17 +239,17 @@ spec:
 				// archive artifact even if it failed (timeout) or was aborted (in order to debug using the video)
 				// because the following steps will be skipped
 				aborted {
-				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log'
+				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'
 				}
 				failure {
-				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log'				    
+				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'				    
 				}
 			}
 	 	}
 		stage("Archive in Jenkins") {
 			steps {
 				echo "archive artifact"
-				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**'
+				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'
 			}
 		}
 		stage('Web upload') {
