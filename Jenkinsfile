@@ -160,7 +160,21 @@ spec:
 				sh "cat .gitmodules"
 			}
 		}
-		stage('Build and unit test') {
+		stage('Pomfirst Build') {
+			steps { 
+				script {	
+					withEnv(["MAVEN_OPTS=-Xmx2000m -XshowSettings:vm"]){
+						dir ('gemoc-studio/dev_support/pomfirst_full_compilation') {
+							sh "mvn -Dmaven.test.failure.ignore \
+									dependency:tree dependency:analyze dependency:analyze-dep-mgt \
+									clean install \
+									--errors --show-version"
+						}      
+					}
+				}
+			}
+	 	}
+		stage('Tycho Build and unit test') {
 			steps { 
 				script {	
 					def studioVariant
@@ -173,7 +187,7 @@ spec:
 					// maven requires some ram to build the update site and product
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
 						"MAVEN_OPTS=-Xmx2048m -XshowSettings:vm -Duser.home=/home/jenkins"]){
-						dir ('gemoc-studio/dev_support/full_compilation') {
+						dir ('gemoc-studio/dev_support/tycho_full_compilation') {
 							sh 'printenv'         
 							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									-Djava.awt.headless=true \
@@ -189,7 +203,7 @@ spec:
 				}
 			}
 	 	}
-		stage('System test') {
+		stage('GEMOCStudio Tycho System test') {
 			steps { 
 				script {	
 					def studioVariant
@@ -202,7 +216,7 @@ spec:
 					// allocate less RAM to maven in order to give more to the UI test JVM
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
 						"MAVEN_OPTS=-Xmx1200m  -XshowSettings:vm"]){
-						dir ('gemoc-studio/dev_support/full_compilation') {         
+						dir ('gemoc-studio/dev_support/tycho_full_compilation') {         
 							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 							sh 'printenv'
 							sh 'touch /tmp/stop-ffmpeg'
@@ -299,23 +313,12 @@ spec:
 			}
 			steps { 
 				script {	
-					def studioVariant
-					if(  env.JENKINS_URL.contains("https://ci.eclipse.org/gemoc/")){
-						studioVariant = "Official build"
-					} else {
-						studioVariant = "${JENKINS_URL}"
-					}
-					// Run the maven build and unit tests only  
-					// maven requires some ram to build the update site and product
-					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=-Xmx2000m -XshowSettings:vm -Duser.home=/home/jenkins"]){
-						dir ('gemoc-studio/dev_support/full_compilation') {
-							sh 'printenv'         
-							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
-									-Djava.awt.headless=true \
+					withEnv(["MAVEN_OPTS=-Xmx2000m -XshowSettings:vm"]){
+						dir ('gemoc-studio/dev_support/pomfirst_full_compilation') {
+							sh "mvn -Dmaven.test.failure.ignore \
 									-DskipTests \
-									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb,!../../gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite\
-									deploy --errors --show-version"
+									deploy \
+									--errors --show-version"
 						}      
 					}
 				}
