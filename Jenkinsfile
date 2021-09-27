@@ -253,17 +253,17 @@ spec:
 				// archive artifact even if it failed (timeout) or was aborted (in order to debug using the video)
 				// because the following steps will be skipped
 				aborted {
-				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'
+				    archiveArtifacts 'gemoc-studio/dev_support/tycho_full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'
 				}
 				failure {
-				    archiveArtifacts 'gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'				    
+				    archiveArtifacts 'gemoc-studio/dev_support/tycho_full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'				    
 				}
 			}
 	 	}
 		stage("Archive in Jenkins") {
 			steps {
 				echo "archive artifact"
-				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'
+				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/tycho_full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'
 			}
 		}
 		stage('Web upload') {
