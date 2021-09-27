@@ -317,6 +317,8 @@ spec:
 						dir ('gemoc-studio/dev_support/pomfirst_full_compilation') {
 							sh "mvn -Dmaven.test.failure.ignore \
 									-DskipTests \
+									-DaltReleaseDeploymentRepository=repo.eclipse.org::default::https://repo.eclipse.org/content/repositories/gemoc-releases/ \
+									-DaltSnapshotDeploymentRepository=repo.eclipse.org::default::https://repo.eclipse.org/content/repositories/gemoc-snapshots/ \
 									deploy \
 									--errors --show-version"
 						}      
