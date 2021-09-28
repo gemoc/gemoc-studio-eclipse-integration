@@ -313,12 +313,13 @@ spec:
 			}
 			steps { 
 				script {	
-					withEnv(["MAVEN_OPTS=-Xmx2000m -XshowSettings:vm"]){
+					withEnv(["MAVEN_OPTS=-Xmx2000m -XshowSettings:vm -Duser.home=/home/jenkins"]){
 						dir ('gemoc-studio/dev_support/pomfirst_full_compilation') {
 							sh "mvn -Dmaven.test.failure.ignore \
 									-DskipTests \
 									-DaltReleaseDeploymentRepository=repo.eclipse.org::default::https://repo.eclipse.org/content/repositories/gemoc-releases/ \
 									-DaltSnapshotDeploymentRepository=repo.eclipse.org::default::https://repo.eclipse.org/content/repositories/gemoc-snapshots/ \
+									-DaltDeploymentRepository=repo.eclipse.org::default::https://repo.eclipse.org/content/repositories/gemoc-releases/ \
 									deploy \
 									--errors --show-version"
 						}      
