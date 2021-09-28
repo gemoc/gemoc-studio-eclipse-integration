@@ -319,7 +319,7 @@ spec:
 									-DskipTests \
 									-DaltReleaseDeploymentRepository=repo.eclipse.org::default::https://repo.eclipse.org/content/repositories/gemoc-releases/ \
 									-DaltSnapshotDeploymentRepository=repo.eclipse.org::default::https://repo.eclipse.org/content/repositories/gemoc-snapshots/ \
-									-DaltDeploymentRepository=repo.eclipse.org::default::https://repo.eclipse.org/content/repositories/gemoc-releases/ \
+									-DaltDeploymentRepository=repo.eclipse.org::default::https://repo.eclipse.org/content/repositories/gemoc-snapshots/ \
 									deploy \
 									--errors --show-version"
 						}      
