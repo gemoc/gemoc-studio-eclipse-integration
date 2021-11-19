@@ -1,0 +1,37 @@
+# 
+name: SyncSubModulesBranches
+
+on:   
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '*/20 * * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      - name: SetSSH key
+        run: |
+          echo $HOME
+          ls -lsa $HOME
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa
+          chmod og-rw $HOME/.ssh/id_rsa
+          ls -lsa $HOME/.ssh
+      - name: Sync submodules branches
+        run: |
+          export GITUSER_NAME=${{ secrets.GITUSER_NAME }}
+          export GITUSER_PASSWORD=${{ secrets.GITUSER_PASSWORD }}
+          cd releng-scripts/sync-gemoc-submodules
+          mvn --batch-mode -Dgituser.email=didier.vojtisek@inria.fr clean verify
