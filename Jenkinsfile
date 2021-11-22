@@ -163,7 +163,7 @@ spec:
 		stage('Pomfirst Build') {
 			steps { 
 				script {	
-					withEnv(["MAVEN_OPTS=-Xmx2000m -XshowSettings:vm"]){
+					withEnv(["MAVEN_OPTS=--batch-mode -Xmx2000m -XshowSettings:vm"]){
 						dir ('gemoc-studio/dev_support/pomfirst_full_compilation') {
 							sh "mvn -Dmaven.test.failure.ignore \
 									dependency:tree dependency:analyze dependency:analyze-dep-mgt \
@@ -186,7 +186,7 @@ spec:
 					// Run the maven build and unit tests only  
 					// maven requires some ram to build the update site and product
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=-Xmx2048m -XshowSettings:vm -Duser.home=/home/jenkins"]){
+						"MAVEN_OPTS=--batch-mode -Xmx2048m -XshowSettings:vm -Duser.home=/home/jenkins"]){
 						dir ('gemoc-studio/dev_support/tycho_full_compilation') {
 							sh 'printenv'         
 							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
@@ -215,7 +215,7 @@ spec:
 					// Run the maven system tests only  
 					// allocate less RAM to maven in order to give more to the UI test JVM
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=-Xmx1200m  -XshowSettings:vm"]){
+						"MAVEN_OPTS=--batch-mode -Xmx1200m  -XshowSettings:vm"]){
 						dir ('gemoc-studio/dev_support/tycho_full_compilation') {         
 							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 							sh 'printenv'
