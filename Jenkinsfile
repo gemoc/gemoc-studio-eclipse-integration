@@ -163,12 +163,12 @@ spec:
 		stage('Pomfirst Build') {
 			steps { 
 				script {	
-					withEnv(["MAVEN_OPTS=--batch-mode -Xmx2000m -XshowSettings:vm"]){
+					withEnv(["MAVEN_OPTS=-Xmx2000m -XshowSettings:vm"]){
 						dir ('gemoc-studio/dev_support/pomfirst_full_compilation') {
 							sh "mvn -Dmaven.test.failure.ignore \
 									dependency:tree dependency:analyze dependency:analyze-dep-mgt \
 									clean install \
-									--errors --show-version"
+									--errors --show-version --batch-mode "
 						}      
 					}
 				}
@@ -186,13 +186,13 @@ spec:
 					// Run the maven build and unit tests only  
 					// maven requires some ram to build the update site and product
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=--batch-mode -Xmx2048m -XshowSettings:vm -Duser.home=/home/jenkins"]){
+						"MAVEN_OPTS=-Xmx2048m -XshowSettings:vm -Duser.home=/home/jenkins"]){
 						dir ('gemoc-studio/dev_support/tycho_full_compilation') {
 							sh 'printenv'         
 							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									-Djava.awt.headless=true \
 									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
-									clean install --errors --show-version"
+									clean install --errors --show-version --batch-mode "
 						}      
 					}
 				}
@@ -215,7 +215,7 @@ spec:
 					// Run the maven system tests only  
 					// allocate less RAM to maven in order to give more to the UI test JVM
 					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
-						"MAVEN_OPTS=--batch-mode -Xmx1200m  -XshowSettings:vm"]){
+						"MAVEN_OPTS=-Xmx1200m  -XshowSettings:vm"]){
 						dir ('gemoc-studio/dev_support/tycho_full_compilation') {         
 							wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 							sh 'printenv'
@@ -235,7 +235,7 @@ spec:
 							    timeout -s KILL 60m \
 								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
-									verify --errors --show-version ")				
+									verify --errors --show-version --batch-mode ")				
 							sh "echo 'q' > /tmp/stop-ffmpeg"
 							if (status != 0) {
   								currentBuild.result = 'FAILED'
