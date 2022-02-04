@@ -234,7 +234,7 @@ spec:
 							def status = sh(returnStatus: true, script: "python3 ~/memory-monitor-per-process.py > process_mem.log &\
 							    timeout -s KILL 60m \
 								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
-									--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
+									--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb,../../gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.targetplatform\
 									verify --errors --show-version --batch-mode ")				
 							sh "echo 'q' > /tmp/stop-ffmpeg"
 							if (status != 0) {
