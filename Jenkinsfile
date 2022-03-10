@@ -174,6 +174,15 @@ spec:
 				}
 			}
 	 	}
+	 	stage('Update targetplatform') {
+			steps { 
+				script {	
+					dir ('gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.targetplatform') {
+						sh "./update_target.sh"
+					} 
+				}
+			}
+	 	}
 		stage('Tycho Build and unit test') {
 			steps { 
 				script {	
