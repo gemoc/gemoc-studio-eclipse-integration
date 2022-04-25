@@ -12,7 +12,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gituser.name>${env.GITUSER_NAME}</gituser.name>
-    <gituser.password>${env.GITUSER_PASSWORD}</gituser.password>
+    <!--<gituser.password>${env.GITUSER_PASSWORD}</gituser.password>-->
+    <gituser.token>${env.GITUSER_TOKEN}</gituser.token>
     <gituser.email></gituser.email>
   </properties>
 
@@ -23,9 +24,9 @@
         <artifactId>sync-git-submodules-branches-plugin</artifactId>
         <version>1.0.2</version>
         <configuration>
-        	<parentGitURL>git@github.com:gemoc/gemoc-studio-eclipse-integration.git</parentGitURL>
-        	<userOrToken>${gituser.name}</userOrToken>
-        	<password>${gituser.password}</password>
+        	<parentGitURL>https://github.com/gemoc/gemoc-studio-eclipse-integration.git</parentGitURL>
+        	<userOrToken>${gituser.token}</userOrToken>
+        	<!---<password>${gituser.password}</password>-->
         	<committerName>${gituser.name}</committerName>
         	<committerEmail>${gituser.email}</committerEmail>
         	<inactivityThreshold>90</inactivityThreshold>
