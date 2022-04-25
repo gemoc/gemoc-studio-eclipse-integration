@@ -32,6 +32,7 @@ jobs:
       - name: Sync submodules branches
         run: |
           export GITUSER_NAME=gemoc-bot
+          export GITUSER_TOKEN=${{ secrets.BOT_GITUSER_TOKEN }}
           export GITUSER_PASSWORD=${{ secrets.BOT_GITUSER_PASSWORD }}
           cd releng-scripts/sync-gemoc-submodules
           mvn --batch-mode -Dgituser.email=didier.vojtisek@inria.fr clean verify
