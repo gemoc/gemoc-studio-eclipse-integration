@@ -22,7 +22,7 @@
       <plugin>
         <groupId>org.gemoc.git-sync-tools</groupId>
         <artifactId>sync-git-submodules-branches-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
         <configuration>
         	<parentGitURL>https://github.com/gemoc/gemoc-studio-eclipse-integration.git</parentGitURL>
         	<userOrToken>${gituser.token}</userOrToken>
