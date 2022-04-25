@@ -26,7 +26,7 @@
         <configuration>
         	<parentGitURL>https://github.com/gemoc/gemoc-studio-eclipse-integration.git</parentGitURL>
         	<userOrToken>${gituser.token}</userOrToken>
-        	<!---<password>${gituser.password}</password>-->
+        	<password></password>
         	<committerName>${gituser.name}</committerName>
         	<committerEmail>${gituser.email}</committerEmail>
         	<inactivityThreshold>90</inactivityThreshold>
