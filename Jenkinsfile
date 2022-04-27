@@ -11,7 +11,7 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - image: gemoc/gemoc-jenkins-fat-agent:2022-02-07
+  - image: gemoc/gemoc-jenkins-fat-agent:2022-04-26
     name: 'jnlp'
     resources:
       limits:
@@ -160,6 +160,16 @@ spec:
 				sh "cat .gitmodules"
 			}
 		}
+		stage('Generate protocols') {
+			steps { 
+				dir ('gemoc-studio-modeldebugging/protocols/generators/ts/JSONSchema2APIProtocolGenerator') {
+					sh 'npm config ls'
+					sh 'npm install'
+					sh 'npm run build'
+					sh 'npm run generate'
+		        }
+			}
+	 	}
 		stage('Pomfirst Build') {
 			steps { 
 				script {	
@@ -174,7 +184,7 @@ spec:
 				}
 			}
 	 	}
-	 	stage('Update targetplatform') {
+	 	/* stage('Update targetplatform') {
 			steps { 
 				script {	
 					dir ('gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.targetplatform') {
@@ -182,7 +192,7 @@ spec:
 					} 
 				}
 			}
-	 	}
+	 	} */
 		stage('Tycho Build and unit test') {
 			steps { 
 				script {	
@@ -212,7 +222,7 @@ spec:
 				}
 			}
 	 	}
-		stage('GEMOCStudio Tycho System test') {
+		stage('Tycho System test') {
 			steps { 
 				script {	
 					def studioVariant
