@@ -22,3 +22,6 @@
 	path = gemoc-studio-execution-java
 	url = https://github.com/eclipse/gemoc-studio-execution-java.git
 	branch = master
+[submodule "gemoc-studio-commons"]
+	path = gemoc-studio-commons
+	url = https://github.com/eclipse/gemoc-studio-commons.git
