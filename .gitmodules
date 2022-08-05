@@ -25,3 +25,4 @@
 [submodule "gemoc-studio-commons"]
 	path = gemoc-studio-commons
 	url = https://github.com/eclipse/gemoc-studio-commons.git
+	branch = master
