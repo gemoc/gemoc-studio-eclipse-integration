@@ -97,7 +97,9 @@ spec:
 	}
 	tools {
 	        // cf. https://wiki.eclipse.org/Jenkins#Tools_.28and_locations_on_the_default_JNLP_agent_container.29
-        	maven 'apache-maven-latest'
+		// cf. https://wiki.eclipse.org/Jenkins#Apache_Maven
+        	// maven 'apache-maven-latest'
+		maven 'apache-maven-3.8.6'
         	jdk 'openjdk-jdk11-latest'
 	}
 	environment {
