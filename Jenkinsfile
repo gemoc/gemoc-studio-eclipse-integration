@@ -11,7 +11,7 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - image: gemoc/gemoc-jenkins-fat-agent:2022-04-26
+  - image: gemoc/gemoc-jenkins-fat-agent:2023-05-05
     name: 'jnlp'
     resources:
       limits:
