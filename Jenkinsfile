@@ -11,7 +11,7 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - image: gemoc/gemoc-jenkins-fat-agent:2023-05-05
+  - image: gemoc/gemoc-jenkins-fat-agent:2023-06-14
     name: 'jnlp'
     resources:
       limits:
@@ -96,11 +96,11 @@ spec:
 		timeout(time: 5, unit: 'HOURS')   // timeout on whole pipeline job
 	}
 	tools {
-	        // cf. https://wiki.eclipse.org/Jenkins#Tools_.28and_locations_on_the_default_JNLP_agent_container.29
+	    // cf. https://wiki.eclipse.org/Jenkins#Tools_.28and_locations_on_the_default_JNLP_agent_container.29
 		// cf. https://wiki.eclipse.org/Jenkins#Apache_Maven
-        	// maven 'apache-maven-latest'
+        // maven 'apache-maven-latest'
 		maven 'apache-maven-3.8.6'
-        	jdk 'openjdk-jdk11-latest'
+        jdk 'openjdk-jdk17-latest'
 	}
 	environment {
 		DOWNLOAD_FOLDER = "/home/data/httpd/download.eclipse.org/gemoc"
@@ -284,7 +284,7 @@ spec:
 		stage("Archive in Jenkins") {
 			steps {
 				echo "archive artifact"
-				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/tycho_full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'
+				archiveArtifacts 'gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.tar.gz, gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/repository/**, gemoc-studio/docs/org.eclipse.gemoc.studio.doc/target/publish/**, gemoc-studio/dev_support/tycho_full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/process_mem.log'
 			}
 		}
 		stage('Web upload') {
