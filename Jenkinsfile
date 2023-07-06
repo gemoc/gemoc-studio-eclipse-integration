@@ -301,6 +301,7 @@ spec:
 					'''
 					sh '''
 						scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/packages/nightly
+						scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.tar.gz ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/packages/nightly
 						scp -r gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/index.html ${STORAGE_SERVER}:${DOWNLOAD_FOLDER}/packages/nightly
 					'''
 					echo "Deploy updatesite to download.eclipse.org"
