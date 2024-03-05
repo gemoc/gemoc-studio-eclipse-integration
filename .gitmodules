@@ -1,7 +1,7 @@
 [submodule "gemoc-studio"]
 	path = gemoc-studio
 	url = https://github.com/eclipse/gemoc-studio.git
-	branch = master
+	branch = dependabot/maven/gemoc_studio/pomfirst/gemoc-studio-bom/org.eclipse.platform-org.eclipse.core.runtime-3.29.0
 [submodule "gemoc-studio-modeldebugging"]
 	path = gemoc-studio-modeldebugging
 	url = https://github.com/eclipse/gemoc-studio-modeldebugging.git
