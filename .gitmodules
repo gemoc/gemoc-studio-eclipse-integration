@@ -17,7 +17,7 @@
 [submodule "gemoc-studio-moccml"]
 	path = gemoc-studio-moccml
 	url = https://github.com/eclipse/gemoc-studio-moccml.git
-	branch = master
+	branch = fix-deprecated-xtext-generator
 [submodule "gemoc-studio-execution-java"]
 	path = gemoc-studio-execution-java
 	url = https://github.com/eclipse/gemoc-studio-execution-java.git
