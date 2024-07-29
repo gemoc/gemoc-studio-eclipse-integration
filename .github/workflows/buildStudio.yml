@@ -27,8 +27,9 @@ jobs:
           echo ${{ github.workspace }}
           ls -lsa ${{ github.workspace }}
       - name: Set UID GID env
-        run: echo "RUNNER_UID=$(id -u)" >> $GITHUB_ENV
-        run: echo "RUNNER_GID=$(id -G)" >> $GITHUB_ENV
+        run: |
+          echo "RUNNER_UID=$(id -u)" >> $GITHUB_ENV
+          echo "RUNNER_GID=$(id -G)" >> $GITHUB_ENV
       - name: Generate protocol in container
         uses: addnab/docker-run-action@v3
         with:
