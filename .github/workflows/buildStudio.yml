@@ -28,14 +28,14 @@ jobs:
           ls -lsa ${{ github.workspace }}
       - name: Set UID GID env
         run: |
-          echo "RUNNER_UID=$(id -u)" >> $GITHUB_ENV
-          echo "RUNNER_GID=$(id -G)" >> $GITHUB_ENV
+          echo "R_UID=$(id -u)" >> $GITHUB_ENV
+          echo "R_GID=$(id -G)" >> $GITHUB_ENV
       - name: Generate protocol in container
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
           # -v $PWD/../../../..:/home/ubuntu/src -v $PWD/cache-m2:/home/ubuntu/.m2 --env UID=$(id -u) --env GID=$(id -g)
-          options: -v ${{ github.workspace }}:/home/ubuntu/src --env UID=${{ env.RUNNER_UID }} --env GID=${{ env.RUNNER_GID }}
+          options: -v ${{ github.workspace }}:/home/ubuntu/src --env UID=${{ env.R_UID }} --env GID=${{ env.R_GID }}
           run: |
             echo "This step is using a Public Docker Container Action "
             ./generate_protocols.sh
@@ -44,7 +44,7 @@ jobs:
         with:
           image: gemoc/gemoc-builder:latest
           # -v $PWD/../../../..:/home/ubuntu/src -v $PWD/cache-m2:/home/ubuntu/.m2 --env UID=$(id -u) --env GID=$(id -g)
-          options: -v ${{ github.workspace }}:/home/ubuntu/src --env UID=${{ env.RUNNER_UID }} --env GID=${{ env.RUNNER_GID }}
+          options: -v ${{ github.workspace }}:/home/ubuntu/src --env UID=${{ env.R_UID }} --env GID=${{ env.R_GID }}
           run: |
             echo "This step is using a Public Docker Container Action "
             ./pomfirst_build.sh
