@@ -1,0 +1,25 @@
+# 
+name: BuildStudio
+
+on:   
+  #schedule:
+    # * is a special character in YAML so you have to quote this string
+    #- cron:  '*/20 * * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  generate-protocols:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Generate protocol in container
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          run: |
+            echo "This step is using a Public Docker Container Action "
+            ./generate_protocols.sh
+      
