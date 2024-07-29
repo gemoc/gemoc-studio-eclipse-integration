@@ -16,8 +16,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: SetSSH key
+        with:
+          submodules: 'true'
+      - name: Show coontext
         run: |
+          id -u
+          id -g
           echo $HOME
           ls -lsa $HOME
           cd $HOME
@@ -26,6 +30,8 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
+          # -v $PWD/../../../..:/home/ubuntu/src -v $PWD/cache-m2:/home/ubuntu/.m2 --env UID=$(id -u) --env GID=$(id -g)
+          options: -v ${{ github.workspace }}:/home/ubuntu/src 
           run: |
             echo "This step is using a Public Docker Container Action "
             ./generate_protocols.sh
