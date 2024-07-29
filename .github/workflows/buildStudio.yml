@@ -18,14 +18,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'true'
-      - name: Show coontext
+      - name: Show context
         run: |
           id -u
           id -g
           echo $HOME
           ls -lsa $HOME
-          cd $HOME
-          tree
+          echo ${{ github.workspace }}
+          ls -lsa ${{ github.workspace }}
       - name: Generate protocol in container
         uses: addnab/docker-run-action@v3
         with:
@@ -35,4 +35,15 @@ jobs:
           run: |
             echo "This step is using a Public Docker Container Action "
             ./generate_protocols.sh
-      
+      - name: pomfirst build
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          # -v $PWD/../../../..:/home/ubuntu/src -v $PWD/cache-m2:/home/ubuntu/.m2 --env UID=$(id -u) --env GID=$(id -g)
+          options: -v ${{ github.workspace }}:/home/ubuntu/src 
+          run: |
+            echo "This step is using a Public Docker Container Action "
+            ./pomfirst_build.sh
+            
+            
+            
