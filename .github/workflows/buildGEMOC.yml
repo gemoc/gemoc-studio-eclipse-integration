@@ -72,11 +72,12 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '**/MANIFEST.MF', '**/*.target') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Set UID and GID env
+      - name: Set UID and GID vars
+        id: vars
         # required to correctly map the userId in the docker image
         run: |
-          echo "UID=$(id -u)" >> $GITHUB_ENV
-          echo "GID=$(id -g)" >> $GITHUB_ENV
+          echo "uid=$(id -u)" >> $GITHUB_OUTPUT
+          echo "gid=$(id -g)" >> $GITHUB_OUTPUT
       - name: Generate protocol in container
         uses: addnab/docker-run-action@v3
         with:
@@ -89,9 +90,10 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
-          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2 --env UID=${{ env.UID }} --env GID=${{ env.GID }}
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2 --env UID=${{ steps.vars.outputs.uid }} --env GID=${{ steps.vars.outputs.gid }}
           run: |
             id
+            env
             ./tycho_build.sh linux_no_system_test
 
       - name: Publish Test Results
