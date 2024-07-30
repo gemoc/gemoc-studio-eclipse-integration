@@ -89,7 +89,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
-          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2 --env UID={{ env.UID }} --env GID={{ env.GID }}
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2 --env UID=${{ env.UID }} --env GID=${{ env.GID }}
           run: |
             id
             ./tycho_build.sh linux_no_system_test
