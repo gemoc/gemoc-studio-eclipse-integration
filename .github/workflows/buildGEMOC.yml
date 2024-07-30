@@ -94,5 +94,9 @@ jobs:
             id
             ./tycho_build.sh linux_no_system_test
 
-            
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
+        if: always()  # always run even if the previous step fails
+        with:
+          junit_files: "**/target/surefire-reports/TEST-*.xml"            
             
