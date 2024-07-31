@@ -25,7 +25,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-pomfirst-${{ hashFiles('**/pom.xml', '**/MANIFEST.MF', '**/*.target') }}
+          key: ${{ runner.os }}-m2-pomfirst-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2-pomfirst
       - name: Set UID and GID env
         # required to correctly map the userId in the docker image
@@ -70,7 +70,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-tycho-${{ hashFiles('**/pom.xml', '**/MANIFEST.MF', '**/*.target') }}
+          key: ${{ runner.os }}-m2-tycho-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2-tycho
       - name: Set UID and GID vars
         id: vars
