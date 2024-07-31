@@ -49,8 +49,9 @@ jobs:
         with:
           image: gemoc/gemoc-builder:latest
           options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.GHRUNNER_HOME }}/.m2:/home/ubuntu/.m2  --env UID=${{ env.GHRUNNER_UID }} --env GID=${{ env.GHRUNNER_GID }}
-          run: |
-            echo "This step is using a Public Docker Container Action "
+          run: |            
+            chmod -R a+rw /home/ubuntu/.m2
+            chown -R ${{ env.GHRUNNER_UID }}:${{ env.GHRUNNER_GID }} /home/ubuntu/.m2
             /entrypoint ./pomfirst_build.sh
             ls -lsa /home/ubuntu
             ls -lsa /home/ubuntu/.m2
