@@ -66,7 +66,6 @@ jobs:
           ls -lsa $HOME
           echo ${{ github.workspace }}
           ls -lsa ${{ github.workspace }}
-          ls -lsa /home/ubuntu/.m2
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
