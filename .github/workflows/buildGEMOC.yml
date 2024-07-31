@@ -94,7 +94,7 @@ jobs:
           run: |
             id
             env
-            ./tycho_build.sh linux_no_system_test
+            /entrypoint ./tycho_build.sh linux_no_system_test
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2.17.0
