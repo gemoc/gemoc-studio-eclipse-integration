@@ -42,7 +42,7 @@ jobs:
           options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.RUNNER_HOME }}/.m2:/home/ubuntu/.m2
           run: |
             echo "This step is using a Public Docker Container Action "
-            ./generate_protocols.sh
+            /entrypoint ./generate_protocols.sh
       - name: pomfirst build
         uses: addnab/docker-run-action@v3
         with:
@@ -50,7 +50,7 @@ jobs:
           options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.RUNNER_HOME }}/.m2:/home/ubuntu/.m2
           run: |
             echo "This step is using a Public Docker Container Action "
-            ./pomfirst_build.sh
+            /entrypoint ./pomfirst_build.sh
             ls -lsa /home/ubuntu
             ls -lsa /home/ubuntu/.m2
       - name: Show context
@@ -98,7 +98,7 @@ jobs:
           options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.RUNNER_HOME }}/.m2:/home/ubuntu/.m2
           run: |
             id
-            ./generate_protocols.sh
+            /entrypoint ./generate_protocols.sh
       - name: tycho linux_no_system_test build
         uses: addnab/docker-run-action@v3
         with:
