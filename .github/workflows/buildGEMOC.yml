@@ -30,6 +30,7 @@ jobs:
           key: ${{ runner.os }}-m2-pomfirst-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2-pomfirst
       - name: Set UID and GID env
+        id: vars
         # required to correctly map the userId in the docker image
         run: |
           echo "UID=$(id -u)" >> $GITHUB_ENV
