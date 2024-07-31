@@ -28,7 +28,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'true'
-          path: /home/ubuntu/src
       - name: Show context
         run: |
           id -u
