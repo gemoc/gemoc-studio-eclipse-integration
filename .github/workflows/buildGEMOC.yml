@@ -22,9 +22,9 @@ jobs:
           echo ${{ github.workspace }}
           ls -lsa ${{ github.workspace }}
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
-          path: ${{ env.HOME }}/.m2
+          path: ~/.m2
           key: ${{ runner.os }}-m2-pomfirst-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2-pomfirst
       - name: Set UID and GID env
@@ -67,9 +67,9 @@ jobs:
           echo ${{ github.workspace }}
           ls -lsa ${{ github.workspace }}
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
-          path: ${{ env.HOME }}/.m2
+          path: ~/.m2
           key: ${{ runner.os }}-m2-tycho-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2-tycho
       - name: Set UID and GID vars
