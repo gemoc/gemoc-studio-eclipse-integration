@@ -51,7 +51,16 @@ jobs:
           run: |
             echo "This step is using a Public Docker Container Action "
             ./pomfirst_build.sh
-          
+            ls -lsa /home/ubuntu
+            ls -lsa /home/ubuntu/.m2
+      - name: Show context
+        run: |
+          id -u
+          id -g
+          echo $HOME
+          ls -lsa $HOME
+          echo $HOME/.m2
+          ls -lsa $HOME/.m2         
             
   tycho-build:
     runs-on: ubuntu-latest
