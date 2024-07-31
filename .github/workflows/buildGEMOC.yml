@@ -19,8 +19,11 @@ jobs:
           id -g
           echo $HOME
           ls -lsa $HOME
+          echo "env.HOME ${{ env.HOME }}"
           echo ${{ github.workspace }}
           ls -lsa ${{ github.workspace }}
+          cd ~
+          pwd
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -52,9 +55,11 @@ jobs:
         run: |
           id -u
           id -g
+          
+          echo "ls -lsa /"
+          ls -lsa /
           echo HOME=$HOME
           ls -lsa $HOME
-          ls -lsa $HOME/.m2
           echo github.workspace=${{ github.workspace }}
           ls -lsa ${{ github.workspace }}
           echo ~/.m2 content
