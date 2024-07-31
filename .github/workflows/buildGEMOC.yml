@@ -19,13 +19,12 @@ jobs:
           id -g
           echo $HOME
           ls -lsa $HOME
-          echo "env.HOME ${{ env.HOME }}"
           echo ${{ github.workspace }}
           ls -lsa ${{ github.workspace }}
           cd ~
           pwd
       - name: Cache Maven packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-pomfirst-${{ hashFiles('**/pom.xml') }}
@@ -35,11 +34,12 @@ jobs:
         run: |
           echo "UID=$(id -u)" >> $GITHUB_ENV
           echo "GID=$(id -g)" >> $GITHUB_ENV
+          echo "RUNNER_HOME=$HOME" >> $GITHUB_ENV
       - name: Generate protocol in container
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
-          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.RUNNER_HOME }}/.m2:/home/ubuntu/.m2
           run: |
             echo "This step is using a Public Docker Container Action "
             ./generate_protocols.sh
@@ -47,24 +47,10 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
-          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.RUNNER_HOME }}/.m2:/home/ubuntu/.m2
           run: |
             echo "This step is using a Public Docker Container Action "
             ./pomfirst_build.sh
-      - name: Show context
-        run: |
-          id -u
-          id -g
-          
-          echo "ls -lsa /"
-          ls -lsa /
-          echo HOME=$HOME
-          ls -lsa $HOME
-          echo github.workspace=${{ github.workspace }}
-          ls -lsa ${{ github.workspace }}
-          echo ~/.m2 content
-          ls -lsa ~/.m2            
-          tree ~/.m2
           
             
   tycho-build:
@@ -87,7 +73,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-tycho-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-m2-tycho-${{ hashFiles('**/pom.xml', '**/MANIFEST.MF', '**/*.target') }}
           restore-keys: ${{ runner.os }}-m2-tycho
       - name: Set UID and GID vars
         id: vars
@@ -95,11 +81,12 @@ jobs:
         run: |
           echo "uid=$(id -u)" >> $GITHUB_OUTPUT
           echo "gid=$(id -g)" >> $GITHUB_OUTPUT
+          echo "RUNNER_HOME=$HOME" >> $GITHUB_ENV
       - name: Generate Protocol classes
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
-          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.RUNNER_HOME }}/.m2:/home/ubuntu/.m2
           run: |
             id
             ./generate_protocols.sh
@@ -107,7 +94,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
-          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2 --env UID=${{ steps.vars.outputs.uid }} --env GID=${{ steps.vars.outputs.gid }}
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.RUNNER_HOME }}/.m2:/home/ubuntu/.m2 --env UID=${{ steps.vars.outputs.uid }} --env GID=${{ steps.vars.outputs.gid }}
           run: |
             id
             env
