@@ -114,9 +114,14 @@ jobs:
           junit_files: "${{ github.workspace }}/**/target/surefire-reports/TEST-*.xml"  
       - uses: actions/upload-artifact@v4
         with:
-          name: gemoc-studio
-          path: |
-            gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.tar.gz
-            gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip
-            gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/*.zip           
+          name: gemoc-studio-linux
+          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/gemoc_studio-linux.gtk.x86_64.tar.gz  
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gemoc-studio-headless-linux
+          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/gemoc_studio_headless-linux.gtk.x86_64.tar.gz 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gemoc-studio-update-site
+          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/org.eclipse.gemoc.gemoc_studio.updatesite-*.zip           
             
