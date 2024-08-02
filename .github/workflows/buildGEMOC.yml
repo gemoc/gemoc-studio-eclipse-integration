@@ -103,10 +103,20 @@ jobs:
             chmod -R a+rw /home/ubuntu/.m2
             chown -R ${{ steps.vars.outputs.uid }}:${{ steps.vars.outputs.gid }} /home/ubuntu/.m2
             /entrypoint ./tycho_build.sh linux_no_system_test
+      - name: tycho system test
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.GHRUNNER_HOME }}/.m2:/home/ubuntu/.m2  --env UID=${{ env.GHRUNNER_UID }} --env GID=${{ env.GHRUNNER_GID }}
+          # first run as root and fix .m2 access right, then run as ubuntu via the entrypoint
+          run: |
+            chmod -R a+rw /home/ubuntu/.m2
+            chown -R ${{ steps.vars.outputs.uid }}:${{ steps.vars.outputs.gid }} /home/ubuntu/.m2
+            /entrypoint ./tycho_build.sh linux_system_test_only
       - uses: actions/upload-artifact@v4
         with:
           name: test-reports
-          path: ${{ github.workspace }}/**/target/surefire-reports/*
+          path: ${{ github.workspace }}/**/target/surefire-reports/* 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()  # always run even if the previous step fails
@@ -115,13 +125,16 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: gemoc-studio-linux
-          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/gemoc_studio-linux.gtk.x86_64.tar.gz  
+          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/gemoc_studio-linux.gtk.x86_64.tar.gz 
+          compression-level: 0 # no compression 
       - uses: actions/upload-artifact@v4
         with:
           name: gemoc-studio-headless-linux
           path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/gemoc_studio_headless-linux.gtk.x86_64.tar.gz 
+          compression-level: 0 # no compression 
       - uses: actions/upload-artifact@v4
         with:
           name: gemoc-studio-update-site
-          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/org.eclipse.gemoc.gemoc_studio.updatesite-*.zip           
+          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/org.eclipse.gemoc.gemoc_studio.updatesite-*.zip 
+          compression-level: 0 # no compression           
             
