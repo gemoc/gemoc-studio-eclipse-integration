@@ -128,6 +128,7 @@ jobs:
           path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/gemoc_studio-linux.gtk.x86_64.tar.gz 
           compression-level: 0 # no compression 
       - uses: actions/upload-artifact@v4
+        if: always()  # always run even if the previous step fails
         with:
           name: gemoc-studio-headless-linux
           path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/gemoc_studio_headless-linux.gtk.x86_64.tar.gz 
