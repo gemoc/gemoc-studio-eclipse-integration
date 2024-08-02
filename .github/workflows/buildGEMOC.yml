@@ -106,14 +106,17 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: test-reports
-          path: **/target/surefire-reports/*
+          path: ${{ github.workspace }}/**/target/surefire-reports/*
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()  # always run even if the previous step fails
         with:
-          junit_files: "**/target/surefire-reports/TEST-*.xml"  
+          junit_files: "${{ github.workspace }}/**/target/surefire-reports/TEST-*.xml"  
       - uses: actions/upload-artifact@v4
         with:
           name: gemoc-studio
-          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/           
+          path: |
+            gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.tar.gz
+            gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/*.zip
+            gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/*.zip           
             
