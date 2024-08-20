@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout code 📥
         uses: actions/checkout@v4
         with:
           submodules: 'true'
@@ -23,21 +23,21 @@ jobs:
           ls -lsa ${{ github.workspace }}
           cd ~
           pwd
-      - name: Cache Maven packages
+      - name: Cache Maven packages 💾
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-pomfirst-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2-pomfirst
          
-      - name: Set UID and GID env
+      - name: Set UID and GID env 🔧
         id: vars
         # required to correctly map the userId in the docker image
         run: |
           echo "GHRUNNER_UID=$(id -u)" >> $GITHUB_ENV
           echo "GHRUNNER_GID=$(id -g)" >> $GITHUB_ENV
           echo "GHRUNNER_HOME=$HOME" >> $GITHUB_ENV
-      - name: Generate protocol in container
+      - name: Generate protocol in container 🛠️
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
@@ -45,7 +45,7 @@ jobs:
           run: |
             echo "This step is using a Public Docker Container Action "
             /entrypoint ./generate_protocols.sh
-      - name: pomfirst build
+      - name: pomfirst build 🛠️
         uses: addnab/docker-run-action@v3
         with:
           image: gemoc/gemoc-builder:latest
@@ -119,7 +119,7 @@ jobs:
         with:
           name: test-reports
           path: ${{ github.workspace }}/**/target/surefire-reports/* 
-      - name: Publish Test Results
+      - name: Publish Test Results 🚀
         uses: EnricoMi/publish-unit-test-result-action@v2.17.0
         if: always()  # always run even if the previous step fails
         with:
