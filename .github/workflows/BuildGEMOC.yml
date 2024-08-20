@@ -1,0 +1,146 @@
+# 
+name: BuildGEMOC
+
+on:  
+  push: 
+
+jobs:
+  pomfirst-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Show context
+        run: |
+          id -u
+          id -g
+          echo $HOME
+          ls -lsa $HOME
+          echo ${{ github.workspace }}
+          ls -lsa ${{ github.workspace }}
+          cd ~
+          pwd
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-pomfirst-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-pomfirst
+         
+      - name: Set UID and GID env
+        id: vars
+        # required to correctly map the userId in the docker image
+        run: |
+          echo "GHRUNNER_UID=$(id -u)" >> $GITHUB_ENV
+          echo "GHRUNNER_GID=$(id -g)" >> $GITHUB_ENV
+          echo "GHRUNNER_HOME=$HOME" >> $GITHUB_ENV
+      - name: Generate protocol in container
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.GHRUNNER_HOME }}/.m2:/home/ubuntu/.m2  --env UID=${{ env.GHRUNNER_UID }} --env GID=${{ env.GHRUNNER_GID }}
+          run: |
+            echo "This step is using a Public Docker Container Action "
+            /entrypoint ./generate_protocols.sh
+      - name: pomfirst build
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.GHRUNNER_HOME }}/.m2:/home/ubuntu/.m2  --env UID=${{ env.GHRUNNER_UID }} --env GID=${{ env.GHRUNNER_GID }}
+          run: |            
+            chmod -R a+rw /home/ubuntu/.m2
+            chown -R ${{ env.GHRUNNER_UID }}:${{ env.GHRUNNER_GID }} /home/ubuntu/.m2
+            /entrypoint ./pomfirst_build.sh
+            ls -lsa /home/ubuntu
+            ls -lsa /home/ubuntu/.m2
+      
+  tycho-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code 📥
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Show context
+        run: |
+          id -u
+          id -g
+          echo $HOME
+          ls -lsa $HOME
+          echo ${{ github.workspace }}
+          ls -lsa ${{ github.workspace }}
+      - name: Cache Maven packages 💾
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-tycho-${{ hashFiles('**/pom.xml', '**/MANIFEST.MF', '**/*.target') }}
+          restore-keys: ${{ runner.os }}-m2-tycho
+      - name: Set UID and GID env 🔧
+        id: vars
+        # required to correctly map the userId in the docker image
+        run: |
+          echo "GHRUNNER_UID=$(id -u)" >> $GITHUB_ENV
+          echo "GHRUNNER_GID=$(id -g)" >> $GITHUB_ENV
+          echo "GHRUNNER_HOME=$HOME" >> $GITHUB_ENV
+      - name: Generate Protocol classes 🛠️
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.GHRUNNER_HOME }}/.m2:/home/ubuntu/.m2  --env UID=${{ env.GHRUNNER_UID }} --env GID=${{ env.GHRUNNER_GID }}
+          run: |
+            id
+            /entrypoint ./generate_protocols.sh
+      - name: tycho linux_no_system_test build 🛠️🧪
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.GHRUNNER_HOME }}/.m2:/home/ubuntu/.m2  --env UID=${{ env.GHRUNNER_UID }} --env GID=${{ env.GHRUNNER_GID }}
+          # first run as root and fix .m2 access right, then run as ubuntu via the entrypoint
+          run: |
+            chmod -R a+rw /home/ubuntu/.m2
+            chown -R ${{ steps.vars.outputs.uid }}:${{ steps.vars.outputs.gid }} /home/ubuntu/.m2
+            /entrypoint ./tycho_build.sh linux_no_system_test
+      - name: tycho system test 🧪
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.GHRUNNER_HOME }}/.m2:/home/ubuntu/.m2  --env UID=${{ env.GHRUNNER_UID }} --env GID=${{ env.GHRUNNER_GID }}
+          # first run as root and fix .m2 access right, then run as ubuntu via the entrypoint
+          run: |
+            chmod -R a+rw /home/ubuntu/.m2
+            chown -R ${{ steps.vars.outputs.uid }}:${{ steps.vars.outputs.gid }} /home/ubuntu/.m2
+            /entrypoint ./tycho_build.sh linux_system_test_only
+      - name: Upload test-reports artefact 📦️
+        uses: actions/upload-artifact@v4
+        if: always()  # always run even if the previous step fails
+        with:
+          name: test-reports
+          path: ${{ github.workspace }}/**/target/surefire-reports/* 
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
+        if: always()  # always run even if the previous step fails
+        with:
+          junit_files: "${{ github.workspace }}/**/target/surefire-reports/TEST-*.xml"  
+      - name: Upload gemoc-studio-linux artefact 📦️
+        uses: actions/upload-artifact@v4
+        if: always()  # always run even if the previous step fails
+        with:
+          name: gemoc-studio-linux
+          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/gemoc_studio-linux.gtk.x86_64.tar.gz 
+          compression-level: 0 # no compression 
+      - name: Upload gemoc-studio-headless-linux artefact 📦️
+        uses: actions/upload-artifact@v4
+        with:
+          name: gemoc-studio-headless-linux
+          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/products/gemoc_studio_headless-linux.gtk.x86_64.tar.gz 
+          compression-level: 0 # no compression 
+      - name: Upload gemoc-studio-update-site artefact 📦️
+        uses: actions/upload-artifact@v4
+        with:
+          name: gemoc-studio-update-site
+          path: gemoc-studio/gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite/target/org.eclipse.gemoc.gemoc_studio.updatesite-*.zip 
+          compression-level: 0 # no compression           
+            
