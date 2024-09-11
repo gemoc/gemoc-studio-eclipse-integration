@@ -213,7 +213,7 @@ spec:
 							sh "python3 ~/memory-monitor-per-process.py > build_process_mem.log &\
 								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									-Djava.awt.headless=true \
-									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb\
+									--projects !../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,!../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb,!../../gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite\
 									clean install --errors --show-version --batch-mode "
 						}      
 					}
@@ -222,7 +222,38 @@ spec:
 			post {
 				always {
 					junit '**/target/surefire-reports/TEST-*.xml'
-				    	archiveArtifacts 'gemoc-studio/dev_support/tycho_full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/build_process_mem.log' 
+					archiveArtifacts 'gemoc-studio/dev_support/tycho_full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/build_process_mem.log' 
+				}
+			}
+	 	}
+	 	stage('Tycho Build product') {
+			steps { 
+				script {	
+					def studioVariant
+					if(  env.JENKINS_URL.contains("https://ci.eclipse.org/gemoc/")){
+						studioVariant = "Official build"
+					} else {
+						studioVariant = "${JENKINS_URL}"
+					}
+					// Run the maven build and unit tests only  
+					// maven requires some ram to build the update site and product
+					withEnv(["STUDIO_VARIANT=${studioVariant}","BRANCH_VARIANT=${BRANCH_NAME}",
+						"MAVEN_OPTS=-Xmx2048m -XshowSettings:vm -Duser.home=/home/jenkins"]){
+						dir ('gemoc-studio/dev_support/tycho_full_compilation') {
+							sh 'printenv'         
+							sh "python3 ~/memory-monitor-per-process.py > build_product_process_mem.log &\
+								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
+									-Djava.awt.headless=true \
+									--projects ../../gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.targetplatform,../../gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite\
+									clean install --errors --show-version --batch-mode "
+						}      
+					}
+				}
+			}
+			post {
+				always {
+					junit '**/target/surefire-reports/TEST-*.xml'
+				    archiveArtifacts 'gemoc-studio/dev_support/tycho_full_compilation/target/**, **/screenshots/**, **/.metadata/.log, **/*_process_mem.log' 
 				}
 			}
 	 	}
