@@ -102,7 +102,7 @@ jobs:
           run: |
             chmod -R a+rw /home/ubuntu/.m2
             chown -R ${{ steps.vars.outputs.uid }}:${{ steps.vars.outputs.gid }} /home/ubuntu/.m2
-            /entrypoint ./tycho_build.sh linux_no_system_test
+            /entrypoint ./tycho_build.sh --linux no_system_test
       - name: tycho system test 🧪
         uses: addnab/docker-run-action@v3
         with:
@@ -112,7 +112,7 @@ jobs:
           run: |
             chmod -R a+rw /home/ubuntu/.m2
             chown -R ${{ steps.vars.outputs.uid }}:${{ steps.vars.outputs.gid }} /home/ubuntu/.m2
-            /entrypoint ./tycho_build.sh linux_system_test_only
+            /entrypoint ./tycho_build.sh --linux system_test_only
       - name: Upload test-reports artefact 📦️
         uses: actions/upload-artifact@v4
         if: always()  # always run even if the previous step fails
