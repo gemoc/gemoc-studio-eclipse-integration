@@ -43,3 +43,6 @@ jobs:
           export GITUSER_PASSWORD=${{ secrets.BOT_GITUSER_PASSWORD }}
           cd releng-scripts/sync-gemoc-submodules
           mvn --batch-mode -Dgituser.email=didier.vojtisek@inria.fr clean verify
+      - name: Report branches 🔍
+        run: |
+          cat releng-scripts/sync-gemoc-submodules/target/syncReport.md  >> $GITHUB_STEP_SUMMARY
