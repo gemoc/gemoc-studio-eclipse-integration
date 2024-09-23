@@ -241,7 +241,8 @@ spec:
 						"MAVEN_OPTS=-Xmx2048m -XshowSettings:vm -Duser.home=/home/jenkins"]){
 						dir ('gemoc-studio/dev_support/tycho_full_compilation') {
 							sh 'printenv'         
-							sh "mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
+							sh "python3 ~/memory-monitor-per-process.py > build_product_process_mem.log &\
+								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									-Djava.awt.headless=true \
 									--projects ../../gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.targetplatform,../../gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.updatesite\
 									clean install --errors --show-version --batch-mode "
@@ -285,7 +286,8 @@ spec:
 							// use linux timeout in order to continue the video capture
 							// capture the returnStatus in order to make sure to stop ffmepg even if an error occured
 							//def status = sh(returnStatus: true, script: "top -c -d 2 -w128 -b& \
-							def status = sh(returnStatus: true, script: "timeout -s KILL 60m \
+							def status = sh(returnStatus: true, script: "python3 ~/memory-monitor-per-process.py > system_test_process_mem.log &\
+								timeout -s KILL 60m \
 								mvn -Dmaven.test.failure.ignore \"-Dstudio.variant=${studioVariant}\" -Dbranch.variant=${BRANCH_VARIANT} \
 									--projects ../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.lwb,../../gemoc_studio/tests/org.eclipse.gemoc.studio.tests.system.mwb,../../gemoc_studio/releng/org.eclipse.gemoc.gemoc_studio.targetplatform\
 									verify --errors --show-version --batch-mode ")				
