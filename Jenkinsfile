@@ -91,7 +91,7 @@ spec:
 	}
 	options {
 		//skipDefaultCheckout(true) // avoid default checkout implied by declarative pipeline (we do it in the prepare stage)
-		buildDiscarder( logRotator(numToKeepStr:'60', artifactNumToKeepStr: '5'))
+		buildDiscarder( logRotator(numToKeepStr:'60', artifactNumToKeepStr: '2'))
 		disableConcurrentBuilds()
 		timeout(time: 5, unit: 'HOURS')   // timeout on whole pipeline job
 	}
