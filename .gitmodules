@@ -1,28 +1,28 @@
 [submodule "gemoc-studio"]
 	path = gemoc-studio
-	url = https://github.com/eclipse/gemoc-studio.git
+	url = https://github.com/eclipse-gemoc/gemoc-studio.git
 	branch = master
 [submodule "gemoc-studio-modeldebugging"]
 	path = gemoc-studio-modeldebugging
-	url = https://github.com/eclipse/gemoc-studio-modeldebugging.git
+	url = https://github.com/eclipse-gemoc/gemoc-studio-modeldebugging.git
 	branch = master
 [submodule "gemoc-studio-execution-ale"]
 	path = gemoc-studio-execution-ale
-	url = https://github.com/eclipse/gemoc-studio-execution-ale.git
+	url = https://github.com/eclipse-gemoc/gemoc-studio-execution-ale.git
 	branch = master
 [submodule "gemoc-studio-execution-moccml"]
 	path = gemoc-studio-execution-moccml
-	url = https://github.com/eclipse/gemoc-studio-execution-moccml.git
+	url = https://github.com/eclipse-gemoc/gemoc-studio-execution-moccml.git
 	branch = master
 [submodule "gemoc-studio-moccml"]
 	path = gemoc-studio-moccml
-	url = https://github.com/eclipse/gemoc-studio-moccml.git
+	url = https://github.com/eclipse-gemoc/gemoc-studio-moccml.git
 	branch = master
 [submodule "gemoc-studio-execution-java"]
 	path = gemoc-studio-execution-java
-	url = https://github.com/eclipse/gemoc-studio-execution-java.git
+	url = https://github.com/eclipse-gemoc/gemoc-studio-execution-java.git
 	branch = master
 [submodule "gemoc-studio-commons"]
 	path = gemoc-studio-commons
-	url = https://github.com/eclipse/gemoc-studio-commons.git
+	url = https://github.com/eclipse-gemoc/gemoc-studio-commons.git
 	branch = master

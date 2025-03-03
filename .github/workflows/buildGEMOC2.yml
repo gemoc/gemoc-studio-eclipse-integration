@@ -1,0 +1,106 @@
+# 
+name: BuildGEMOC
+
+on:  
+  push: 
+
+jobs:
+  pomfirst-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Show context
+        run: |
+          id -u
+          id -g
+          echo $HOME
+          ls -lsa $HOME
+          echo ${{ github.workspace }}
+          ls -lsa ${{ github.workspace }}
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-pomfirst-${{ hashFiles('**/pom.xml', '**/MANIFEST.MF', '**/*.target') }}
+          restore-keys: ${{ runner.os }}-m2-pomfirst
+      - name: Set UID and GID env
+        # required to correctly map the userId in the docker image
+        run: |
+          echo "UID=$(id -u)" >> $GITHUB_ENV
+          echo "GID=$(id -g)" >> $GITHUB_ENV
+      - name: Generate protocol in container
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2
+          run: |
+            echo "This step is using a Public Docker Container Action "
+            ./generate_protocols.sh
+      - name: pomfirst build
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2
+          run: |
+            echo "This step is using a Public Docker Container Action "
+            ./pomfirst_build.sh
+            
+            
+  tycho-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Show context
+        run: |
+          id -u
+          id -g
+          echo $HOME
+          ls -lsa $HOME
+          echo ${{ github.workspace }}
+          ls -lsa ${{ github.workspace }}
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-tycho-${{ hashFiles('**/pom.xml', '**/MANIFEST.MF', '**/*.target') }}
+          restore-keys: ${{ runner.os }}-m2-tycho
+      - name: Set UID and GID vars
+        id: vars
+        # required to correctly map the userId in the docker image
+        run: |
+          echo "uid=$(id -u)" >> $GITHUB_OUTPUT
+          echo "gid=$(id -g)" >> $GITHUB_OUTPUT
+      - name: Generate Protocol classes
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2
+          run: |
+            id
+            ./generate_protocols.sh
+      - name: tycho linux_no_system_test build
+        uses: addnab/docker-run-action@v3
+        with:
+          image: gemoc/gemoc-builder:latest
+          options: -v ${{ github.workspace }}:/home/ubuntu/src -v ${{ env.HOME }}/.m2:/home/ubuntu/.m2 --env UID=${{ steps.vars.outputs.uid }} --env GID=${{ steps.vars.outputs.gid }}
+          run: |
+            id
+            env
+            chmod -R a+rw /home/ubuntu/.m2
+            
+            /entrypoint ./tycho_build.sh linux_no_system_test
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.0
+        if: always()  # always run even if the previous step fails
+        with:
+          junit_files: "**/target/surefire-reports/TEST-*.xml"            
+            
