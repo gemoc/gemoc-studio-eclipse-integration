@@ -15,11 +15,11 @@ spec:
     name: 'jnlp'
     resources:
       limits:
-        memory: '4Gi'
-        cpu: '2000m'
+        memory: '8Gi'
+        cpu: '4000m'
       requests:
-        memory: '4Gi'
-        cpu: '1000m'
+        memory: '7Gi'
+        cpu: '2000m'
     securityContext:
       privileged: false
     tty: true
