@@ -101,7 +101,7 @@ jobs:
           # first run as root and fix .m2 access right, then run as ubuntu via the entrypoint
           run: |
             chmod -R a+rw /home/ubuntu/.m2
-            chown -R ${{ steps.vars.outputs.uid }}:${{ steps.vars.outputs.gid }} /home/ubuntu/.m2
+            chown -R ${{ env.GHRUNNER_UID }}:${{ env.GHRUNNER_GID }} /home/ubuntu/.m2
             /entrypoint ./tycho_build.sh --linux --batch-mode no_system_test
       - name: tycho system test 🧪
         uses: addnab/docker-run-action@v3
@@ -111,7 +111,7 @@ jobs:
           # first run as root and fix .m2 access right, then run as ubuntu via the entrypoint
           run: |
             chmod -R a+rw /home/ubuntu/.m2
-            chown -R ${{ steps.vars.outputs.uid }}:${{ steps.vars.outputs.gid }} /home/ubuntu/.m2
+            chown -R ${{ env.GHRUNNER_UID }}:${{ env.GHRUNNER_GID }} /home/ubuntu/.m2
             /entrypoint ./tycho_build.sh --linux --batch-mode system_test_only
       - name: Upload test-reports artefact 📦️
         uses: actions/upload-artifact@v4
